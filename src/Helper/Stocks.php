@@ -21,8 +21,10 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
 class Stocks extends AbstractHelper {
-    const ONLY_X_LEFT_IN_STOCK = 'only_x_left_in_stock';
     const STOCK_STATUS = 'stock_status';
+    const MIN_STOCK_QTY = 'min_sale_qty';
+    const MAX_STOCK_QTY = 'max_sale_qty';
+    const ONLY_X_LEFT_IN_STOCK = 'only_x_left_in_stock';
 
     /**
      * @var SourceItemRepositoryInterface
@@ -67,8 +69,10 @@ class Stocks extends AbstractHelper {
     {
         $stocks = [];
         $validFields = [
-            self::ONLY_X_LEFT_IN_STOCK,
-            self::STOCK_STATUS
+            self::STOCK_STATUS,
+            self::MIN_STOCK_QTY,
+            self::MAX_STOCK_QTY,
+            self::ONLY_X_LEFT_IN_STOCK
         ];
 
         foreach ($node->selectionSet->selections as $selection) {
@@ -132,12 +136,18 @@ class Stocks extends AbstractHelper {
                 $leftInStock = $isThresholdPassed ? $qty : null;
             }
 
+            print_r($stockItem->toJson());
+            exit;
+
             $formattedStocks[$stockItem->getSku()] = [
                 'stock_status' => $inStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
                 'only_x_left_in_stock' => $leftInStock,
                 'min_sale_qty' => $stockItem->getMinSaleQty(),
                 'max_sale_qty' => $stockItem->getMaxSaleQty()
             ];
+
+            print_r($formattedStocks[$stockItem->getSku()]);
+            exit;
         }
 
         foreach ($products as $product) {
