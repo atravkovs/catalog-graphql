@@ -134,7 +134,9 @@ class Stocks extends AbstractHelper {
 
             $formattedStocks[$stockItem->getSku()] = [
                 'stock_status' => $inStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
-                'only_x_left_in_stock' => $leftInStock
+                'only_x_left_in_stock' => $leftInStock,
+                'min_sale_qty' => $stockItem->getMinSaleQty(),
+                'max_sale_qty' => $stockItem->getMaxSaleQty()
             ];
         }
 

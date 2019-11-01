@@ -48,6 +48,8 @@ interface ProductInterface {
     thumbnail: OptimizedProductImage @resolver(class: "ScandiPWA\\CatalogGraphQl\\Model\\Resolver\\Value")
     only_x_left_in_stock: Float @resolver(class: "ScandiPWA\\CatalogGraphQl\\Model\\Resolver\\Value")
     stock_status: ProductStockStatus @resolver(class: "ScandiPWA\\CatalogGraphQl\\Model\\Resolver\\Value")
+    min_sale_qty: ProductStockStatus @resolver(class: "ScandiPWA\\CatalogGraphQl\\Model\\Resolver\\Value")
+    max_sale_qty: ProductStockStatus @resolver(class: "ScandiPWA\\CatalogGraphQl\\Model\\Resolver\\Value")
 }
 
 type ProductBreadcrumbs {
