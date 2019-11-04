@@ -19,12 +19,19 @@ use Magento\InventoryApi\Api\SourceItemRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\CatalogInventory\Model\ResourceModel\Stock\Status\StockStatusCriteria;
+use Magento\CatalogInventory\Api\StockStatusRepositoryInterface;
 
 class Stocks extends AbstractHelper {
     const STOCK_STATUS = 'stock_status';
     const MIN_STOCK_QTY = 'min_sale_qty';
     const MAX_STOCK_QTY = 'max_sale_qty';
     const ONLY_X_LEFT_IN_STOCK = 'only_x_left_in_stock';
+
+    /**
+     * @var StockStatusRepositoryInterface
+     */
+    private $stockStatusRepository;
 
     /**
      * @var SourceItemRepositoryInterface
@@ -37,6 +44,11 @@ class Stocks extends AbstractHelper {
     protected $searchCriteriaBuilder;
 
     /**
+     * @var StockStatusCriteria
+     */
+    protected $stockStatusCriteria;
+
+    /**
      * @var ScopeConfigInterface
      */
     protected $scopeConfig;
@@ -47,18 +59,24 @@ class Stocks extends AbstractHelper {
      * @param SourceItemRepositoryInterface $stockRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param ScopeConfigInterface $scopeConfig
+     * @param StockStatusCriteria $stockStatusCriteria
+     * @param StockStatusRepositoryInterface $stockStatusRepository
      */
     public function __construct(
         Context $context,
         SourceItemRepositoryInterface $stockRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        StockStatusCriteria $stockStatusCriteria,
+        StockStatusRepositoryInterface $stockStatusRepository
     ) {
         parent::__construct($context);
 
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->stockRepository = $stockRepository;
         $this->scopeConfig = $scopeConfig;
+        $this->stockStatusCriteria = $stockStatusCriteria;
+        $this->stockStatusRepository = $stockStatusRepository;
     }
 
     /**
@@ -99,9 +117,7 @@ class Stocks extends AbstractHelper {
             return $productStocks;
         }
 
-        $productSKUs = array_map(function ($product) {
-            return $product->getSku();
-        }, $products);
+        list($productIds, $productSKUs) = $this->getProductIdentificators($products);
 
         $thresholdQty = 0;
 
@@ -136,29 +152,56 @@ class Stocks extends AbstractHelper {
                 $leftInStock = $isThresholdPassed ? $qty : null;
             }
 
-            print_r($stockItem->toJson());
-            exit;
-
             $formattedStocks[$stockItem->getSku()] = [
                 'stock_status' => $inStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
-                'only_x_left_in_stock' => $leftInStock,
-                'min_sale_qty' => $stockItem->getMinSaleQty(),
-                'max_sale_qty' => $stockItem->getMaxSaleQty()
+                'only_x_left_in_stock' => $leftInStock
             ];
-
-            print_r($formattedStocks[$stockItem->getSku()]);
-            exit;
         }
+
+        $stocksMinMax = $this->getProductMinMaxSalableQties($productIds);
 
         foreach ($products as $product) {
             $id = $product->getId();
             $sku = $product->getSku();
 
             if (isset($formattedStocks[$sku])) {
-                $productStocks[$id] = $formattedStocks[$sku];
+                $productStocks[$id] = array_merge($formattedStocks[$sku], $stocksMinMax[$id]);
             }
         }
 
         return $productStocks;
+    }
+
+    private function getProductIdentificators($products): array
+    {
+        $productIds = [];
+        $productSKUs = [];
+
+        foreach ($products as $product) {
+            $productIds[] = $product->getId();
+            $productSKUs[] = $product->getSku();
+        }
+
+        return [$productIds, $productSKUs];
+    }
+
+    private function getProductMinMaxSalableQties(array $productIds): array
+    {
+        $criteria = $this->stockStatusCriteria;
+        $criteria->setProductsFilter($productIds);
+
+        $minMaxSalableQties = [];
+
+        $items = $this->stockStatusRepository->getList($criteria)->getItems();
+        foreach ($items as $productId => $stockStatus) {
+            $stockItem = $stockStatus->getStockItem();
+
+            $minMaxSalableQties[$productId] = [
+                'min_sale_qty' => $stockItem->getMinSaleQty(),
+                'max_sale_qty' => $stockItem->getMaxSaleQty(),
+            ];
+        }
+
+        return $minMaxSalableQties;
     }
 }
