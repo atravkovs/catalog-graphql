@@ -60,8 +60,6 @@ class FilterProcessor implements CollectionProcessorInterface
         foreach ($searchCriteria->getFilterGroups() as $group) {
             $this->addFilterGroupToCollection($group, $collection);
         }
-
-        exit;
     }
 
     /**

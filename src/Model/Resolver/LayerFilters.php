@@ -49,6 +49,7 @@ class LayerFilters extends \Magento\CatalogGraphQl\Model\Resolver\LayerFilters i
         }
 
         $this->filtersDataProvider->setRequiredAttributesFromItems($value['items'] ?? []);
+        $this->filtersDataProvider->setProductCollection($value['productCollection'] ?? null);
 
         return $this->filtersDataProvider->getData($value['layer_type']);
     }

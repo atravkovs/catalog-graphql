@@ -113,10 +113,14 @@ class Product extends \Magento\CatalogGraphQl\Model\Resolver\Products\DataProvid
         bool $isSearch = false,
         bool $isChildSearch = false
     ): SearchResultsInterface {
+
+
         /** @var Collection $collection */
         $collection = $this->collectionFactory->create();
 
+
         $this->collectionProcessor->process($collection, $searchCriteria, $attributes);
+
 
         if (!$isChildSearch) {
             $singleProduct = CriteriaCheck::isSingleProductFilter($searchCriteria);
@@ -130,7 +134,9 @@ class Product extends \Magento\CatalogGraphQl\Model\Resolver\Products\DataProvid
             $collection->setVisibility($visibilityIds);
         }
 
+
         $collection->load();
+
 
         // Methods that perform extra fetches post-load
         if (in_array('media_gallery_entries', $attributes)) {
@@ -140,18 +146,23 @@ class Product extends \Magento\CatalogGraphQl\Model\Resolver\Products\DataProvid
             $collection->addOptionsToResult();
         }
 
+
         if (in_array('review_summary', $attributes)) {
             /** @var ProductCollection $collection */
             // Only getItems is used inside
             $this->review->appendSummary($collection);
         }
 
+
         $searchResult = $this->searchResultsFactory->create();
         $searchResult->setSearchCriteria($searchCriteria);
         $searchResult->setItems($collection->getItems());
         $searchResult->setTotalCount($collection->getSize());
 
+
         $this->collection = $collection;
+
+
 
         list($this->minPrice,$this->maxPrice) = $this->getCollectionMinMaxPrice($collection);
         return $searchResult;
