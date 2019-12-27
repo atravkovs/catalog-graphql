@@ -60,6 +60,8 @@ class Product extends \Magento\CatalogGraphQl\Model\Resolver\Products\DataProvid
      */
     private $maxPrice;
 
+    private $collection;
+
     /**
      * @var StoreManagerInterface
      */
@@ -149,6 +151,8 @@ class Product extends \Magento\CatalogGraphQl\Model\Resolver\Products\DataProvid
         $searchResult->setItems($collection->getItems());
         $searchResult->setTotalCount($collection->getSize());
 
+        $this->collection = $collection;
+
         list($this->minPrice,$this->maxPrice) = $this->getCollectionMinMaxPrice($collection);
         return $searchResult;
     }
@@ -193,4 +197,10 @@ class Product extends \Magento\CatalogGraphQl\Model\Resolver\Products\DataProvid
     {
         return $this->maxPrice;
     }
+
+    public function getProductCollection()
+    {
+        return $this->collection;
+    }
+
 }

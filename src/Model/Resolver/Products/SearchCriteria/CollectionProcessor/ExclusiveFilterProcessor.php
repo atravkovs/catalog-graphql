@@ -10,12 +10,11 @@
 namespace ScandiPWA\CatalogGraphQl\Model\Resolver\Products\SearchCriteria\CollectionProcessor;
 
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessor\FilterProcessor\CustomFilterInterface;
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Data\Collection\AbstractDb;
 
-class FilterProcessor implements CollectionProcessorInterface
+class ExclusiveFilterProcessor
 {
     /**
      * @var CustomFilterInterface[]

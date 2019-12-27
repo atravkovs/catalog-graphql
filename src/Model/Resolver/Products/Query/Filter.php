@@ -88,7 +88,8 @@ class Filter
             $products->getTotalCount(),
             $this->productDataProvider->getMinPrice(),
             $this->productDataProvider->getMaxPrice(),
-            $productArray
+            $productArray,
+            $this->productDataProvider->getProductCollection()
         );
     }
 

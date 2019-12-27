@@ -45,7 +45,8 @@ class SearchResultFactory
         int $totalCount,
         float $minPrice,
         float $maxPrice,
-        array $productsSearchResult
+        array $productsSearchResult,
+        $collection
     ) : SearchResult
     {
         return $this->objectManager->create(
@@ -54,7 +55,8 @@ class SearchResultFactory
                 'totalCount' => $totalCount,
                 'minPrice' => $minPrice,
                 'maxPrice' => $maxPrice,
-                'productsSearchResult' => $productsSearchResult
+                'productsSearchResult' => $productsSearchResult,
+                'collection' => $collection
             ]
         );
     }

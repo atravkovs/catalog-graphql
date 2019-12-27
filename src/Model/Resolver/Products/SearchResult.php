@@ -39,6 +39,8 @@ class SearchResult
      */
     private $productsSearchResult;
 
+    private $collection;
+
     /**
      * @param int $totalCount
      * @param float $minPrice
@@ -49,12 +51,14 @@ class SearchResult
         int $totalCount,
         float $minPrice,
         float $maxPrice,
-        array $productsSearchResult
+        array $productsSearchResult,
+        $collection
     ) {
         $this->totalCount = $totalCount;
         $this->minPrice = $minPrice;
         $this->maxPrice = $maxPrice;
         $this->productsSearchResult = $productsSearchResult;
+        $this->collection = $collection;
     }
 
     /**
@@ -95,5 +99,10 @@ class SearchResult
     public function getProductsSearchResult() : array
     {
         return $this->productsSearchResult;
+    }
+
+    public function getProductCollection()
+    {
+        return $this->collection;
     }
 }

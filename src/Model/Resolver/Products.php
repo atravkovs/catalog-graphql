@@ -80,6 +80,7 @@ class Products implements ResolverInterface
         $searchCriteria = $this->searchCriteriaBuilder->build($field->getName(), $args);
         $searchCriteria->setCurrentPage($args['currentPage']);
         $searchCriteria->setPageSize($args['pageSize']);
+
         if (!isset($args['search']) && !isset($args['filter'])) {
             throw new GraphQlInputException(
                 __("'search' or 'filter' input argument is required.")
@@ -108,17 +109,18 @@ class Products implements ResolverInterface
             );
         }
 
-
         $data = [
             'total_count' => $searchResult->getTotalCount(),
             'min_price' => $searchResult->getMinPrice(),
             'max_price' => $searchResult->getMaxPrice(),
+            'productCollection' => $searchResult->getProductCollection(),
             'items' => $searchResult->getProductsSearchResult(),
             'page_info' => [
                 'page_size' => $searchCriteria->getPageSize(),
                 'current_page' => $currentPage,
                 'total_pages' => $maxPages
             ],
+            'searchCriteria' => $searchCriteria,
             'layer_type' => $layerType
         ];
 
